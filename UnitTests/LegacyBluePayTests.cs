@@ -22,7 +22,6 @@ namespace UnitTests
 
         private const decimal _amount = 3.00m;
         
-        
         [Test]
         public void CancelCustomerAchTransaction()
         {
@@ -66,7 +65,7 @@ namespace UnitTests
             
             
             var bpFactory = new BluePayTransactionFactory(accountId, secretKey, mode);
-            var foo = bpFactory.CreateCreditCardTransaction(
+            var foo = bpFactory.BuildCreditCardDebit(
                 _firstName,
                 _lastName,
                 _address1,
