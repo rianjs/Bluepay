@@ -41,6 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BluePay.cs" />
+    <Compile Include="BluepayAchTransaction.cs" />
+    <Compile Include="BluepayCreditTransaction.cs" />
+    <Compile Include="BluepayTransaction.cs" />
     <Compile Include="BluePayTransactionFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

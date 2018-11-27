@@ -23,12 +23,12 @@ namespace UnitTests
         private const decimal _amount = 3.00m;
         
         [Test]
-        public void CancelCustomerAchTransaction()
+        public void BuildCreditCardDebitTests()
         {
             // Lifted from https://www.bluepay.com/developers/api-documentation/csharp/transactions/cancel-transaction/
-            string accountId = "Merchant's Account ID Here";
-            string secretKey = "Merchant's Secret Key Here";
-            string mode = "TEST";
+            const string accountId = "Merchant's Account ID Here";
+            const string secretKey = "Merchant's Secret Key Here";
+            const string mode = "TEST";
 
             var payment = new BluePay
             (
@@ -65,7 +65,7 @@ namespace UnitTests
             
             
             var bpFactory = new BluePayTransactionFactory(accountId, secretKey, mode);
-            var foo = bpFactory.BuildCreditCardDebit(
+            var threadSafeReplacement = bpFactory.BuildCreditCardDebit(
                 _firstName,
                 _lastName,
                 _address1,
@@ -81,7 +81,70 @@ namespace UnitTests
                 _cvv2,
                 _amount);
             
-            Assert.AreEqual(foo.PostData, legacyPostData);
+            Assert.AreEqual(legacyPostData, threadSafeReplacement.PostData);
         }
+
+        [Test]
+        public void BuildAchDebitTests()
+        {
+            // Lifted from https://www.bluepay.com/developers/api-documentation/csharp/transactions/charge-customer/
+            const string accountId = "Merchant's Account ID Here";
+            const string secretKey = "Merchant's Secret Key Here";
+            const string mode = "TEST";
+
+            var payment = new BluePay
+            (
+                accountId,
+                secretKey,
+                mode
+            );
+
+            payment.SetCustomerInformation
+            (
+                firstName: _firstName,
+                lastName: _lastName,
+                address1: _address1,
+                address2: _address2,
+                city: _city,
+                state: _state,
+                zip: _zip,
+                country: _country,
+                phone: _phone,
+                email: _email
+            );
+
+            const string routingNumber = "123123123";
+            const string accountNumber = "123456789";
+            const string accountType = "C";
+            const string docType = "WEB";
+            
+            payment.SetACHInformation
+            (
+                routingNum: routingNumber,
+                accountNum: accountNumber,
+                accountType: accountType,
+                docType: docType
+            );
+            payment.Sale(amount: "3.00");
+            var legacyPostData = payment.Process();
+            
+            var bpFactory = new BluePayTransactionFactory(accountId, secretKey, mode);
+            var threadSafeReplacement = bpFactory.BuildAchDebit(
+                _firstName,
+                _lastName,
+                _address1,
+                _address2,
+                _city,
+                _state,
+                _zip,
+                _country,
+                _phone,
+                _email,
+                _amount,
+                routingNumber,
+                accountNumber);
+            
+            Assert.AreEqual(legacyPostData, threadSafeReplacement.PostData);
+        }        
     }
 }
